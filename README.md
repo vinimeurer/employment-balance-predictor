@@ -18,7 +18,8 @@ caged-ml-project/
 ├── src/
 │   ├── data/
 │   │   ├── load_data.py        # código de carregamento dos dados e converte para dataframes
-│   │   └── preprocessing.py    # código de tratamento de dados
+│   │   ├── process_data.py     # código de tratamento de dados
+│   │   └── save_data.py        # código para salvar o dataframe em CSV.
 │   │
 │   └── models/
 │       ├── train.py        # código de treinamento do modelo
