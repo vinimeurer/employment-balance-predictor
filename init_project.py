@@ -1,4 +1,4 @@
-from pathlib import Path
+from config import RAW_DATA_DIR, PROCESSED_DATA_DIR, OUTPUT_DATA_DIR, MODEL_DIR
 
 
 class ProjectInitializer:
@@ -15,10 +15,10 @@ class ProjectInitializer:
         Inicializa a lista de diretórios necessários para o projeto.
         """
         self.directories = [
-            Path("data/raw"),
-            Path("data/processed"),
-            Path("data/outputs"),
-            Path("models"),
+            RAW_DATA_DIR,
+            PROCESSED_DATA_DIR,
+            OUTPUT_DATA_DIR,
+            MODEL_DIR,
         ]
 
     def create_directories(self):
