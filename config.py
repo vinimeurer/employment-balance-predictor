@@ -104,3 +104,75 @@ MAP_APRENDIZ = {
     0: "Não Aprendiz",
     1: "Aprendiz",
 }
+
+# =====================
+# Processamento - ajustes de colunas
+# =====================
+
+COLUMN_TYPES_MAP = [
+    ("competenciamov", "Int64"),
+    ("regiao", "Int64"),
+    ("uf", "Int64"),
+    ("municipio", "Int64"),
+    ("secao", "str"),
+    ("subclasse", "str"),
+    ("saldomovimentacao", "Int64"),
+    ("cbo2002ocupacao", "Int64"),
+    ("categoria", "Int64"),
+    ("graudeinstrucao", "Int64"),
+    ("idade", "Int64"),
+    ("horascontratuais", "float"),
+    ("racacor", "Int64"),
+    ("sexo", "Int64"),
+    ("tipoempregador", "Int64"),
+    ("tipoestabelecimento", "Int64"),
+    ("tipodedeficiencia", "Int64"),
+    ("indtrabintermitente", "Int64"),
+    ("indtrabparcial", "Int64"),
+    ("salario", "float"),
+    ("tamestabjan", "Int64"),
+    ("indicadoraprendiz", "Int64"),
+    ("origemdainformacao", "Int64"),
+    ("competenciadec", "Int64"),
+    ("unidadesalariocodigo", "Int64"),
+    ("valorsalariofixo", "float"),
+]
+
+COLUMNS_TO_KEEP = [
+    "competenciamov",
+    "regiao",
+    "uf",
+    "municipio",
+    "secao",
+    "subclasse",
+    "saldomovimentacao",
+    "cbo2002ocupacao",
+    "categoria",
+    "graudeinstrucao",
+    "idade",
+    "horascontratuais",
+    "racacor",
+    "sexo",
+    "tipoempregador",
+    "tipoestabelecimento",
+    "tipodedeficiencia",
+    "indtrabintermitente",
+    "indtrabparcial",
+    "salario",
+    "tamestabjan",
+    "indicadoraprendiz",
+    "origemdainformacao",
+    "competenciadec",
+    "unidadesalariocodigo",
+    "valorsalariofixo",
+    "ano",
+    "mes",
+]
+
+# =====================
+# Processamento - anos e meses para filtrar
+# =====================
+
+MESES_RELEVANTES = {11, 12, 1}
+ANOS_RELEVANTES = {2024, 2025}
+
