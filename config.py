@@ -22,7 +22,7 @@ MODEL_DIR = BASE_DIR / "models"
 
 TRAIN_FILE = RAW_DATA_DIR / "caged_curitiba_consolidado_train.csv"
 PREDICTION_FILE = RAW_DATA_DIR / "caged_curitiba_consolidado_test.csv"
-
+PROCESSED_TRAIN_FILE = PROCESSED_DATA_DIR / "caged_curitiba_consolidado_train_processed.csv"
 
 # =====================
 # EDA - MAPPINGS
