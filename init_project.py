@@ -19,7 +19,6 @@ class ProjectInitializer:
             Path("data/processed"),
             Path("data/outputs"),
             Path("models"),
-            Path("notebooks"),
         ]
 
     def create_directories(self):
