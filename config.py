@@ -139,14 +139,14 @@ COLUMN_TYPES_MAP = [
 ]
 
 COLUMNS_TO_KEEP = [
-    "competenciamov",
-    "regiao",
-    "uf",
+    # "competenciamov",
+    # "regiao",
+    # "uf",
     "municipio",
     "secao",
-    "subclasse",
+    # "subclasse",
     "saldomovimentacao",
-    "cbo2002ocupacao",
+    # "cbo2002ocupacao",
     "categoria",
     "graudeinstrucao",
     "idade",
@@ -161,10 +161,10 @@ COLUMNS_TO_KEEP = [
     "salario",
     "tamestabjan",
     "indicadoraprendiz",
-    "origemdainformacao",
-    "competenciadec",
-    "unidadesalariocodigo",
-    "valorsalariofixo",
+    # "origemdainformacao",
+    # "competenciadec",
+    # "unidadesalariocodigo",
+    # "valorsalariofixo",
     "ano",
     "mes",
 ]
@@ -175,4 +175,52 @@ COLUMNS_TO_KEEP = [
 
 MESES_RELEVANTES = {11, 12, 1}
 ANOS_RELEVANTES = {2024, 2025}
+
+# =====================
+# Modelo - configurações
+# =====================
+
+TARGET_COL = "saldomovimentacao"
+
+# Features numéricas (contínuas ou inteiros que XGBoost trata como numéricos via splits)
+NUMERIC_FEATURES = (
+    "municipio",
+    "categoria",
+    "graudeinstrucao",
+    "idade",
+    "horascontratuais",
+    "racacor",
+    "sexo",
+    "tipoempregador",
+    "tipoestabelecimento",
+    "tipodedeficiencia",
+    "indtrabintermitente",
+    "indtrabparcial",
+    "salario",
+    "tamestabjan",
+    "indicadoraprendiz",
+    "ano",
+    "mes",
+)
+
+# Features categóricas (string, precisam de encoding)
+CATEGORICAL_FEATURES = (
+    "secao",
+)
+
+RANDOM_STATE = 42
+TEST_SIZE = 0.20
+VALIDATION_SIZE = 0.10
+
+XGBOOST_PARAM_GRID = {
+    "n_estimators": [300, 500],
+    "max_depth": [4, 6, 8],
+    "learning_rate": [0.05, 0.1],
+    "min_child_weight": [1, 5],
+    "subsample": [0.8],
+    "colsample_bytree": [0.8],
+}
+
+TRAINED_MODEL_PATH = MODEL_DIR / "best_xgb_pipeline.pkl"
+OUTPUT_PREDICTIONS_FILE = OUTPUT_DATA_DIR / "caged_curitiba_consolidado_test_predictions.csv"
 
