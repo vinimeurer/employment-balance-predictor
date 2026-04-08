@@ -20,11 +20,11 @@ if __name__ == "__main__":
     SaveData(df, PROCESSED_TRAIN_FILE).save_csv()
     print("\nDados de treinamento processados e salvos com sucesso!")
 
-    # Treina o modelo (grid search + avaliação no teste holdout)
-    print("\n" + "=" * 80)
-    print("TREINAMENTO DO MODELO")
-    print("=" * 80)
-    TrainModel().run()
+    # # Treina o modelo (grid search + avaliação no teste holdout)
+    # print("\n" + "=" * 80)
+    # print("TREINAMENTO DO MODELO")
+    # print("=" * 80)
+    # TrainModel().run()
 
     # # Gera previsões para o arquivo de teste do professor
     # print("\n" + "=" * 80)
