@@ -144,9 +144,9 @@ COLUMNS_TO_KEEP = [
     # "uf",
     "municipio",
     "secao",
-    # "subclasse",
+    "subclasse",
     "saldomovimentacao",
-    # "cbo2002ocupacao",
+    "cbo2002ocupacao",
     "categoria",
     "graudeinstrucao",
     "idade",
@@ -184,8 +184,6 @@ TARGET_COL = "saldomovimentacao"
 
 # Features numéricas (contínuas ou inteiros que XGBoost trata como numéricos via splits)
 NUMERIC_FEATURES = (
-    "municipio",
-    "categoria",
     "graudeinstrucao",
     "idade",
     "horascontratuais",
@@ -206,6 +204,10 @@ NUMERIC_FEATURES = (
 # Features categóricas (string, precisam de encoding)
 CATEGORICAL_FEATURES = (
     "secao",
+    "subclasse",
+    "cbo2002ocupacao",
+    "categoria",
+    "municipio",
 )
 
 RANDOM_STATE = 42
