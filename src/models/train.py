@@ -4,9 +4,11 @@ Módulo de treinamento do modelo XGBoost para previsão de saldomovimentacao.
 Pipeline:
     1. Carrega dados processados
     2. Divide em treino_completo (80%) e teste (20%)
-    3. Treina modelo com hiperparâmetros definidos em config.py
-    4. Avalia no teste holdout
-    5. Salva pipeline treinada
+    3. Subdivide treino_completo em treino (90%) e validação (10%)
+    4. Busca melhores hiperparâmetros via ParameterGrid na validação
+    5. Retreina modelo final no treino_completo com melhores params
+    6. Avalia no teste holdout
+    7. Salva pipeline treinada
 """
 
 from __future__ import annotations
@@ -269,7 +271,7 @@ class TrainModel:
         Orquestra o pipeline completo de treinamento:
             1. Carrega dados processados
             2. Divide em treino_completo (80%) e teste (20%)
-            3. Treina modelo com os hiperparâmetros definidos em config.py
+            3. Treina modelo com hiperparâmetros definidos em config.py
             4. Avalia no teste holdout
             5. Salva pipeline
 
