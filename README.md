@@ -13,7 +13,8 @@ caged-ml-project/
 │   └── outputs/    # csv gerado com as predições 
 │
 ├── notebooks/
-│   └── eda.ipynb   # notebook de análise exploratória
+│   ├── eda.ipynb           # notebook de análise exploratóriam
+│   └── model_tuning.ipynb  # notebook para teste de hiperparâmetros
 │
 ├── src/
 │   ├── data/

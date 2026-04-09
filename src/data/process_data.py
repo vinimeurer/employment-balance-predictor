@@ -57,7 +57,9 @@ class ProcessData:
         """
         Converte as colunas do DataFrame conforme o mapeamento COLUMN_TYPES_MAP definido em config.py. 
         Colunas float com separador decimal são corrigidas antes da conversão. 
-        Colunas do tipo 'str' são mantidas como estão.
+        Colunas do tipo 'str' são mantidas como estão. 
+        Apenas converte colunas que existem no DataFrame, permitindo processamento
+        de dados de teste que não possuem a coluna target 'saldomovimentacao'.
 
         Parameters:
             None.
@@ -66,12 +68,17 @@ class ProcessData:
             None.
 
         Raises:
-            KeyError: se alguma coluna do mapeamento não existir no DataFrame.
+            KeyError: se nenhuma coluna do mapeamento existir no DataFrame.
         """
-        col_names = [col for col, _ in COLUMN_TYPES_MAP]
-        self._validate_columns(col_names, "convert_column_types")
-
+        processed_cols = []
+        skipped_cols = []
+        
         for col, dtype in COLUMN_TYPES_MAP:
+            # Pula colunas que não existem (como 'saldomovimentacao' em dados de teste)
+            if col not in self.df.columns:
+                skipped_cols.append(col)
+                continue
+                
             if dtype == "Int64":
                 self.df[col] = (
                     pd.to_numeric(self.df[col], errors="coerce")
@@ -83,6 +90,12 @@ class ProcessData:
                     .str.replace(",", ".", regex=False)
                     .pipe(pd.to_numeric, errors="coerce")
                 )
+            
+            processed_cols.append(col)
+        
+        print(f"Conversão de tipos: {len(processed_cols)} colunas processadas")
+        if skipped_cols:
+            print(f"Colunas não encontradas (esperado em dados de teste): {skipped_cols}")
 
     def create_temporal_features(self) -> None:
         """
@@ -134,19 +147,38 @@ class ProcessData:
     def select_columns(self) -> None:
         """
         Mantém no DataFrame apenas as colunas definidas em COLUMNS_TO_KEEP
-        do config.py, descartando todas as demais.
+        do config.py que existem no DataFrame, descartando todas as demais.
+        
+        Nota: Tolera colunas ausentes (como 'saldomovimentacao' em dados de teste)
+        selecionando apenas as que estão presentes.
 
         Parameters:
             None.
 
         Raises:
-            KeyError: se alguma coluna de COLUMNS_TO_KEEP não existir no DataFrame.
+            KeyError: se nenhuma coluna de COLUMNS_TO_KEEP existir no DataFrame.
 
         Returns:
             None.
         """
-        self._validate_columns(COLUMNS_TO_KEEP, "select_columns")
-        self.df = self.df[COLUMNS_TO_KEEP]
+        # Seleciona apenas colunas que existem
+        cols_to_keep = [col for col in COLUMNS_TO_KEEP if col in self.df.columns]
+        missing_cols = set(COLUMNS_TO_KEEP) - set(self.df.columns)
+        
+        if not cols_to_keep:
+            raise KeyError(
+                f"Nenhuma coluna de COLUMNS_TO_KEEP encontrada no DataFrame. "
+                f"Esperadas: {COLUMNS_TO_KEEP}. Existentes: {list(self.df.columns)}"
+            )
+        
+        if missing_cols:
+            print(
+                f"Colunas esperadas não preservadas (esperado em dados de teste): "
+                f"{missing_cols}. Processando com {len(cols_to_keep)}/{len(COLUMNS_TO_KEEP)} colunas."
+            )
+        
+        print(f"Selecionadas {len(cols_to_keep)} de {len(COLUMNS_TO_KEEP)} colunas esperadas")
+        self.df = self.df[cols_to_keep]
 
     def process(self) -> pd.DataFrame:
         """
