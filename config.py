@@ -214,13 +214,13 @@ RANDOM_STATE = 42
 TEST_SIZE = 0.20
 VALIDATION_SIZE = 0.10
 
-XGBOOST_PARAM_GRID = {
-    "n_estimators": [300, 500],
-    "max_depth": [4, 6, 8],
-    "learning_rate": [0.05, 0.1],
-    "min_child_weight": [1, 5],
-    "subsample": [0.8],
-    "colsample_bytree": [0.8],
+XGBOOST_PARAMS = {
+    "colsample_bytree": 0.6,
+    "learning_rate": 0.03,
+    "max_depth": 13,
+    "min_child_weight": 5,
+    "n_estimators": 800,
+    "subsample": 0.9,
 }
 
 TRAINED_MODEL_PATH = MODEL_DIR / "best_xgb_pipeline.pkl"
