@@ -71,42 +71,49 @@ class PredictModel:
         self.pipeline = model
         return model
 
-    def process_test_data(self) -> pd.DataFrame:
+    def process_test_data(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
-        Carrega e processa o arquivo de teste do professor usando
-        o mesmo pipeline de ProcessData do treino.
+        Carrega os dados raw do teste, mantém cópia original e processa em memória
+        para extrair features necessárias ao modelo.
 
         Parameters:
             None.
 
         Returns:
-            pd.DataFrame: DataFrame processado (sem a coluna saldomovimentacao).
+            tuple[pd.DataFrame, pd.DataFrame]: (df_raw, df_processed)
+                - df_raw: dados originais intactos
+                - df_processed: dados após conversão de tipos, features temporais e seleção de colunas
 
         Raises:
             FileNotFoundError: se o arquivo de teste não existir.
             KeyError: se colunas esperadas estiverem ausentes.
             ValueError: se o DataFrame ficar vazio após processamento.
         """
+        # Carrega arquivo raw
         df_raw = LoadData(PREDICTION_FILE).load_csv()
-        processor = ProcessData(df_raw)
+        
+        # Processa em memória (sem alterar os dados originais)
+        processor = ProcessData(df_raw.copy())
         processor.convert_column_types()
         processor.create_temporal_features()
         processor.select_columns()
+        df_processed = processor.df
 
-        if processor.df.empty:
+        if df_processed.empty:
             raise ValueError(
                 "O DataFrame de teste ficou vazio após o processamento."
             )
 
-        return processor.df
+        return df_raw, df_processed
 
     def run(self) -> None:
         """
         Pipeline completo de predição:
             1. Carrega modelo treinado
-            2. Processa dados de teste
-            3. Gera previsões (mapeia 0 → -1, 1 → 1)
-            4. Salva CSV com dados originais + coluna de previsão
+            2. Carrega dados raw de teste
+            3. Processa em memória para extrair features
+            4. Gera previsões (mapeia 0 → -1, 1 → 1)
+            5. Salva CSV com dados ORIGINAIS + coluna de previsão
 
         Parameters:
             None.
@@ -124,28 +131,37 @@ class PredictModel:
         print("Carregando modelo treinado...")
         self.load_trained_model()
 
-        # 2. Processar dados de teste
+        # 2. Processar dados de teste (mantém originais + processa em memória)
         print("Processando dados de teste...")
-        df_test = self.process_test_data()
+        df_raw, df_processed = self.process_test_data()
 
         # 3. Preparar features na mesma ordem do treino
         feature_cols = list(NUMERIC_FEATURES) + list(CATEGORICAL_FEATURES)
-        missing_cols = [c for c in feature_cols if c not in df_test.columns]
+        missing_cols = [c for c in feature_cols if c not in df_processed.columns]
         if missing_cols:
             raise KeyError(
                 f"Colunas de features ausentes nos dados de teste: {missing_cols}"
             )
 
-        X_test = df_test[feature_cols]
+        X_test = df_processed[feature_cols]
 
         # 4. Gerar previsões e mapear de volta ao domínio original
         y_pred_encoded = self.pipeline.predict(X_test)
         # 0 → -1 (desligamento), 1 → 1 (admissão)
         y_pred = pd.Series(y_pred_encoded).map({1: 1, 0: -1}).values
 
-        # 5. Montar DataFrame de saída: dados do teste + coluna de previsão
-        df_output = df_test.copy()
+        # 5. Montar DataFrame de saída: dados ORIGINAIS + coluna de previsão
+        # Validação crítica: garantir alinhamento entre raw e previsões
+        if len(df_raw) != len(y_pred):
+            raise ValueError(
+                f"ERRO CRÍTICO: Desalinhamento detectado. "
+                f"{len(df_raw)} registros raw vs {len(y_pred)} previsões. "
+                f"O arquivo de saída seria inválido. Abortando."
+            )
+        
+        df_output = df_raw.copy()
         df_output["saldomovimentacao"] = y_pred
+        print(f"Previsões geradas e alinhadas com sucesso: {len(df_output)} registros")
 
         # 6. Salvar
         try:
@@ -161,6 +177,7 @@ class PredictModel:
 
         try:
             df_output.to_csv(OUTPUT_PREDICTIONS_FILE, index=False)
+            print(f"Arquivo salvo com sucesso: {OUTPUT_PREDICTIONS_FILE}")
         except PermissionError:
             raise PermissionError(
                 f"Sem permissão para gravar o arquivo: {OUTPUT_PREDICTIONS_FILE}"
